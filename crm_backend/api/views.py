@@ -6,6 +6,14 @@ from .serializers import *
 from rest_framework import status
 from rest_framework.permissions import IsAdminUser,DjangoModelPermissions
 from rest_framework import generics
+from django.core.mail import send_mail
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
+from django.contrib.auth.decorators import login_required
+
+
+
 
 
 # Create your views here
@@ -39,6 +47,12 @@ def getTesting(request):
     s_data = EnrolSerializer(data,many=True)
     return Response(s_data.data)
 
+@api_view(['GET'])
+def getDev(request):
+    data = Enrol.objects.filter(course = 'devops')
+    s_data = EnrolSerializer(data,many=True)
+    return Response(s_data.data)
+
 #Funtion for posting Enrol data
 @api_view(['POST'])
 def insertData(request):
@@ -53,29 +67,49 @@ def insertData(request):
 #Function for posting joined data
 @api_view(['POST'])
 def insertjoinData(request):
+    #data = StudentJoin.objects.all()
     student = JoinSerializer(data = request.data)
-    print(student)
+    name = request.data["name"]
+    username = request.data["username"]
+    password = request.data["password"]
+    email = request.data["email"]
+    #We are creating user for student to acccess studentdash board
+    user = User.objects.create_user(username, email, password)
+    user.save()
+    to_list = [email]
+    send_mail(
+            name,
+            """
+            Hi {},\n Welcome to our Website.\n Your Username is :{}\n Password:{} """.format(name,username,password),
+            settings.EMAIL_HOST_USER,
+            to_list
+            
+        )
     if student.is_valid():
         student.save()
-
-        
         return Response(student.data,status = status.HTTP_201_CREATED)
     else:
         return Response("Invalid Data",status = status.HTTP_400_BAD_REQUEST )
 
-#This API function for getting single student from joined data
+#This API function for getting students from joined data
+
 @api_view(['GET'])
 def getjoin(request):
     data = StudentJoin.objects.all()
     s_data = JoinSerializer(data,many = True)
 
     return Response(s_data.data)
+
+#This API function for getting single student from joined data
+
 @api_view(['GET'])
 def getjoinData(request,pk):
     data = StudentJoin.objects.get(id = pk)
     s_data = JoinSerializer(data)
 
     return Response(s_data.data)
+
+#Function for posting contact data to the Backend
 
 @api_view(['POST'])
 def contactData(request):
@@ -87,6 +121,7 @@ def contactData(request):
     else:
         return Response("Invalid Data",status = status.HTTP_400_BAD_REQUEST )
 
+#Function for posting demo data to the Backend
 @api_view(['POST'])
 def demoData(request):
     demo = DemoSerializer(data=request.data)
@@ -97,12 +132,69 @@ def demoData(request):
     else:
         return Response("Invalid Data",status = status.HTTP_400_BAD_REQUEST )
 
+#Function for returning demo data to the frontend
 @api_view(['GET'])
 def getdemoData(request):
     data = Demo.objects.all()
     s_data = DemoSerializer(data,many = True)
 
     return Response(s_data.data)
+
+
+@api_view(['POST'])
+def userLogin(request):
+    data = UserSerializer(data=request.data)
+    username = request.data["username"]
+    password = request.data["password"]
+    try:
+        user = authenticate(request.data,username=username,password=password)
+        if user.is_active and not user.is_staff:
+            print(user.is_valid())
+            return Response(True,status=status.HTTP_202_ACCEPTED)
+        else:
+            print("no")
+            return Response(None,status=status.HTTP_401_UNAUTHORIZED)
+    except:
+        return Response(True,status=status.HTTP_202_ACCEPTED)
+
+        
+@api_view(['GET'])
+def getUser(request):
+    data = User.objects.all()
+    s_data = UserSerializer(data,many = True)
+
+    return Response(s_data.data)
+
+@api_view(['POST'])
+def adminLogin(request):
+    data = UserSerializer(data=request.data)
+    username = request.data["username"]
+    password = request.data["password"]
+    try:
+        user = authenticate(request.data,username=username,password=password)
+        if user.is_staff and not user.is_superuser:
+            
+            return Response(True,status=status.HTTP_202_ACCEPTED)
+        else:
+            return Response(None,status=status.HTTP_401_UNAUTHORIZED)
+    except:
+        return Response(True,status=status.HTTP_202_ACCEPTED)
+
+@api_view(['POST'])
+def superLogin(request):
+    data = UserSerializer(data=request.data)
+    username = request.data["username"]
+    password = request.data["password"]
+    try:
+        user = authenticate(request.data,username=username,password=password)
+        if user.is_superuser:
+            
+            return Response(True,status=status.HTTP_202_ACCEPTED)
+        else:
+            return Response(None,status=status.HTTP_401_UNAUTHORIZED)
+    except:
+        return Response(True,status=status.HTTP_202_ACCEPTED)
+
 
 
 

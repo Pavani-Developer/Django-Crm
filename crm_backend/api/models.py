@@ -7,7 +7,7 @@ class Enrol(models.Model):
     firstname = models.TextField(max_length = 200)
     lastname= models.TextField(max_length = 200)
     emailid  = models.EmailField()
-    phoneNumber = PhoneNumberField( null = True, blank = False) # Here
+    phoneNumber = PhoneNumberField( null = True, blank = False ) # Here
     course = models.TextField()
 
     def __str__(self):
@@ -30,7 +30,7 @@ class StudentJoin(models.Model):
     username = models.CharField(max_length=20)
     password = models.CharField(max_length = 20)
     email = models.EmailField(max_length =30)
-    mobile_no = models.CharField(max_length=10)
+    mobile_no = PhoneNumberField( null = True, blank = False )
     course = models.CharField(max_length = 30)
 
     def __str__(self):

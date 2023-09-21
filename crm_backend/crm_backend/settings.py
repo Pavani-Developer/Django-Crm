@@ -58,10 +58,10 @@ MIDDLEWARE = [
 
 
 REST_FRAMEWORK = {
-        'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-      ],
-    
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ]
 }
 
 SIMPLE_JWT = {
@@ -164,3 +164,12 @@ SIMPLE_JWT = {
      'BLACKLIST_AFTER_ROTATION': True
 }
 
+
+#Email Settings
+
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT=587
+EMAIL_HOST_USER='pavani65108@gmail.com'
+EMAIL_HOST_PASSWORD='nbrkfkfxeojvspmc'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS=True
