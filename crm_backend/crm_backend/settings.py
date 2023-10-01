@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'phonenumber_field', 
     'rest_framework',
     'corsheaders',
-    #'rest_framework_simplejwt.token_blacklist' ,
+    'rest_framework_simplejwt.token_blacklist' ,
     'api.apps.ApiConfig',  
 ]
 
@@ -130,6 +130,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
 ]
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ORIGIN_ALLOW_ALL = True
 
 
 # Internationalization

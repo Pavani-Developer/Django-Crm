@@ -11,6 +11,8 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.contrib.auth.decorators import login_required
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
 
 
 
@@ -167,6 +169,7 @@ def getUser(request):
 
 @api_view(['POST'])
 def adminLogin(request):
+    permission_classes = (IsAuthenticated, )
     data = UserSerializer(data=request.data)
     username = request.data["username"]
     password = request.data["password"]
@@ -194,6 +197,19 @@ def superLogin(request):
             return Response(None,status=status.HTTP_401_UNAUTHORIZED)
     except:
         return Response(True,status=status.HTTP_202_ACCEPTED)
+
+
+class LogoutView(APIView):
+     permission_classes = (IsAuthenticated,)
+     def post(self, request):
+          
+          try:
+               refresh_token = request.data["refresh_token"]
+               token = RefreshToken(refresh_token)
+               token.blacklist()
+               return Response(status=status.HTTP_205_RESET_CONTENT)
+          except Exception as e:
+               return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 

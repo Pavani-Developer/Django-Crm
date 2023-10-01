@@ -23,6 +23,7 @@ urlpatterns = [
     path("getuser/",views.getUser),
     path("adminlogin/",views.adminLogin),
     path("superlogin/",views.superLogin),
+    path('logout/', views.LogoutView.as_view(), name ='logout'),
     
 
     
